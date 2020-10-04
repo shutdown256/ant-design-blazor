@@ -55,7 +55,7 @@ namespace AntDesign
 
         protected override async Task OnInitializedAsync()
         {
-            this.Collapse.AddPanel(this);
+            this.Collapse?.AddPanel(this);
             SetClassMap();
             await base.OnInitializedAsync();
         }
@@ -64,13 +64,13 @@ namespace AntDesign
         {
             if (!this.Disabled)
             {
-                this.Collapse.Click(this);
+                this.Collapse?.Click(this);
             }
         }
 
         protected override void Dispose(bool disposing)
         {
-            this.Collapse.RemovePanel(this);
+            this.Collapse?.RemovePanel(this);
             base.Dispose(disposing);
         }
 
@@ -78,10 +78,19 @@ namespace AntDesign
         {
             if (this.Active != active)
             {
-                this.Active = active;
-                this.OnActiveChange.InvokeAsync(active);
-                StateHasChanged();
+                if (!active || this.Collapse is null)
+                {
+                    this.Active = active;
+                    this.OnActiveChange.InvokeAsync(active);
+                    StateHasChanged();
+                }
+                else
+                {
+                    this.Collapse.Click(this);
+                }
             }
         }
+
+        public void Toggle() => SetActive(!this.Active);
     }
 }
